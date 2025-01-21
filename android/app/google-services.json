@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "535024022286",
+    "project_id": "expopushnotifications-6c6b6",
+    "storage_bucket": "expopushnotifications-6c6b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535024022286:android:5173dfb850f8d3f7ba5d5f",
+        "android_client_info": {
+          "package_name": "com.elezdev.findPetsApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaC5fmrTXIihgijPvyLu-61duTazjLwL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
