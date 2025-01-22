@@ -17,30 +17,7 @@ import GraficosResumen from "../graficos/GraficosResumen";
 
 const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const headerAnim = React.useRef(new Animated.Value(0)).current;
-  const handleLogout = async () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que deseas cerrar sesión?",
-      [
-        {
-          text: "Cancelar",
-          onPress: () => console.log("Cancelado"),
-          style: "cancel",
-        },
-        {
-          text: "Cerrar sesión",
-          onPress: async () => {
-            await AsyncStorage.removeItem("access_token");
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" as never }],
-            });
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
+  
   React.useEffect(() => {
     Animated.timing(headerAnim, {
       toValue: 1,
@@ -64,14 +41,14 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
           ],
         }}
       >
-        <Header navigation={navigation} />
+        {/* <Header navigation={navigation} /> */}
       </Animated.View>
       <Search />
       <BannerERP />
       <GraficosResumen />
-      <TouchableOpacity style={styles.followButton} onPress={handleLogout}>
+      {/* <TouchableOpacity style={styles.followButton} onPress={handleLogout}>
         <Text>Logout</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       {/* <Doctor /> */}
     </ScrollView>
   );

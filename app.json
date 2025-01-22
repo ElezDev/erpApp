@@ -4,7 +4,7 @@
     "slug": "findPetsApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/pet-logo.png",
+    "icon": "./assets/logo-login.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
       
@@ -20,9 +20,9 @@
       "package": "com.elezdev.ExpoPetsApp"
     },
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/logo-login.png",
       "resizeMode": "contain",
-      "backgroundColor": "#7738f4"
+      "backgroundColor": "#fff4c2"
     },
     "extra": {
       "eas": {

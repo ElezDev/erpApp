@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Provider as PaperProvider } from 'react-native-paper'; // Importa el Provider de react-native-paper
 import CategoryDetailScreen from './screens/components/categories/CategoryDetailScreen';
 import NewsDetailScreen from './screens/components/news/NewsDetailScreen';
 import BottomTabNavigator from 'screens/components/utils/BottomTabNavigator';
@@ -16,10 +17,9 @@ export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   Notification: undefined;
-  CategoryDetail: { categoryName: string }; 
+  CategoryDetail: { categoryName: string };
   NewsDetail: { newsItem: { id: number; title: string; description: string; image: string } };
   DetalleContrato: { contrato: ContratosModel };
-
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,20 +29,23 @@ export default function App() {
   const data = JSON.stringify(notification, undefined, 2);
   if (expoPushToken) {
     console.log(expoPushToken.data, 'TOKEN');
+    console.log(expoPushToken.data, 'TOKEN');
   }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Indicator">
-        <Stack.Screen name="Indicator" component={IndicatorScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={BottomTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} options={{ title: 'Detalle de Categoría' }} />
-        <Stack.Screen name="NewsDetail" component={NewsDetailScreen} options={{ title: 'Detalle de Noticia' }} />
-        <Stack.Screen name="Notification" component={notificationsScreen} />
-        <Stack.Screen name="DetalleContrato" component={DetalleContratoPage} />
 
-      </Stack.Navigator>
-    </NavigationContainer>
+  return (
+    <PaperProvider> 
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Indicator">
+          <Stack.Screen name="Indicator" component={IndicatorScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Main" component={BottomTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} options={{ title: 'Detalle de Categoría' }} />
+          <Stack.Screen name="NewsDetail" component={NewsDetailScreen} options={{ title: 'Detalle de Noticia' }} />
+          <Stack.Screen name="Notification" component={notificationsScreen} />
+          <Stack.Screen name="DetalleContrato" component={DetalleContratoPage} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
