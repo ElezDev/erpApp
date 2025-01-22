@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import LottieView from 'lottie-react-native';
 import { RootStackParamList } from 'App';
 import color from 'src/constant/color';
 
@@ -26,12 +25,8 @@ const IndicatorScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <LottieView
-        source={require('../../../assets/animations/paw.json')}
-        autoPlay
-        loop
-        style={styles.lottie}
-      />
+      <ActivityIndicator size="large" color={color.primaryColor} />
+      <Text style={styles.text}>Validando información...</Text>
     </View>
   );
 };
@@ -41,16 +36,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: color.primaryLighter,
+    backgroundColor: color.secondaryLight,
   },
-  lottie: {
-    width: 150,
-    height: 150,
-  
+  text: {
+    marginTop: 20,
+    fontSize: 16,
+    color: color.primaryDark,
   },
 });
 
 export default IndicatorScreen;
-
-
-
