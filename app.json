@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "findPetsApp",
-    "slug": "findPetsApp",
+    "name": "ErpVtApp",
+    "slug": "ErpVtApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo-login.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-      
     "ios": {
       "supportsTablet": true
     },
@@ -17,7 +16,7 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./android/app/google-services.json",
-      "package": "com.elezdev.ExpoPetsApp"
+      "package": "com.elezdev.ErpVtApp"
     },
     "splash": {
       "image": "./assets/logo-login.png",
@@ -26,8 +25,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "372a53a6-8a4a-48c3-b846-18a38fc844fe"
+        "projectId": "a5f86990-390f-466b-adf1-277aba28a6c9"
       }
-    }
+    },
+    "owner": "elezdev"
   }
 }

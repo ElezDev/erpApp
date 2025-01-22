@@ -28,11 +28,11 @@ export default function App() {
   const { expoPushToken, notification } = usePushNotifications();
   const data = JSON.stringify(notification, undefined, 2);
   if (expoPushToken) {
-    console.log(expoPushToken.data, 'TOKEN');
-    console.log(expoPushToken.data, 'TOKEN');
+    console.log('TOKEN:', expoPushToken);
+  } else {
+    console.log('No se pudo obtener el token de notificaciones push');
   }
-
-
+  
   return (
     <PaperProvider> 
       <NavigationContainer>

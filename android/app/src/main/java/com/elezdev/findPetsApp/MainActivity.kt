@@ -1,4 +1,4 @@
-package com.elezdev.findPetsApp
+package com.elezdev.ErpVtApp
 
 import android.os.Build
 import android.os.Bundle
