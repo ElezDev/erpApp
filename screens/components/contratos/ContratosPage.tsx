@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   FlatList,
@@ -9,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  Animated, // Importa Animated
 } from "react-native";
 import axios from "axios";
 import BASE_URL from "src/Config/config";
@@ -17,24 +17,31 @@ import { ContratosModel } from "./ContratosTypes";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Checkbox } from "react-native-paper";
+import { stylesDetalle } from "./StylesDetalle";
 
 const ContratosPage = () => {
   const [contratos, setContratos] = useState<ContratosModel[]>([]);
-  const [filteredContratos, setFilteredContratos] = useState<ContratosModel[]>(
-    []
-  );
+  const [filteredContratos, setFilteredContratos] = useState<ContratosModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [filterState, setFilterState] = useState<string | null>(null);
-  const [selectedStates, setSelectedStates] = useState<{
-    [key: string]: boolean;
-  }>({
+  const [selectedStates, setSelectedStates] = useState<{ [key: string]: boolean }>({
     ACTIVO: false,
     INACTIVO: false,
   });
+  const [searchAnim] = useState(new Animated.Value(0)); // Estado para la animación de búsqueda
 
   const navigation = useNavigation();
+
+  // Función para animar la entrada de la barra de búsqueda
+  useEffect(() => {
+    Animated.timing(searchAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const fetchContratos = async () => {
     try {
@@ -98,27 +105,29 @@ const ContratosPage = () => {
 
   const renderContrato = ({ item }: { item: ContratosModel }) => (
     <TouchableOpacity
-      style={styles.card}
+      style={stylesDetalle.card}
       onPress={() => navigation.navigate("DetalleContrato", { contrato: item })}
     >
-      <View style={styles.cardHeader}>
+      <View style={stylesDetalle.cardHeader}>
         <Image
           source={{ uri: item.persona.rutaFotoUrl }}
-          style={styles.avatar}
+          style={stylesDetalle.avatar}
         />
-        <View style={styles.cardHeaderText}>
-          <Text style={styles.title}>{item.numeroContrato}</Text>
-          <Text style={styles.subtitle}>
+        <View style={stylesDetalle.cardHeaderText}>
+          <Text style={stylesDetalle.title}>{item.numeroContrato}</Text>
+          <Text style={stylesDetalle.subtitle}>
             {item.persona.nombre1} {item.persona.apellido1}
           </Text>
-          <Text style={styles.jobTitle}>{item.persona.perfil}</Text>
+          <Text style={stylesDetalle.jobTitle}>{item.persona.perfil}</Text>
         </View>
       </View>
-      <Text style={styles.info}>Fecha: {item.fechaContratacion}</Text>
+      <Text style={stylesDetalle.info}>Fecha: {item.fechaContratacion}</Text>
       <Text
         style={[
-          styles.estado,
-          item.estado.estado === "ACTIVO" ? styles.activo : styles.inactivo,
+          stylesDetalle.estado,
+          item.estado.estado === "ACTIVO"
+            ? stylesDetalle.activo
+            : stylesDetalle.inactivo,
         ]}
       >
         {item.estado.estado}
@@ -128,7 +137,7 @@ const ContratosPage = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={stylesDetalle.loadingContainer}>
         <ActivityIndicator size="large" color="#ff8c00" />
         <Text>Cargando contratos...</Text>
       </View>
@@ -136,12 +145,17 @@ const ContratosPage = () => {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Buscador */}
-      <View style={styles.searchContainer}>
-        <Icon name="search" size={24} color="#666" style={styles.searchIcon} />
+    <View style={stylesDetalle.container}>
+      {/* Animación en la barra de búsqueda */}
+      <Animated.View style={[stylesDetalle.searchContainer, { opacity: searchAnim }]}>
+        <Icon
+          name="search"
+          size={24}
+          color="#666"
+          style={stylesDetalle.searchIcon}
+        />
         <TextInput
-          style={styles.searchInput}
+          style={stylesDetalle.searchInput}
           placeholder="Buscar contrato o persona..."
           value={searchTerm}
           onChangeText={handleSearch}
@@ -151,10 +165,10 @@ const ContratosPage = () => {
             name="filter"
             size={24}
             color="#ff8c00"
-            style={styles.filterIcon}
+            style={stylesDetalle.filterIcon}
           />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
       {/* Lista de contratos */}
       <FlatList
@@ -165,33 +179,36 @@ const ContratosPage = () => {
 
       {/* Modal para filtrar */}
       <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filtrar por estado</Text>
-            <View style={styles.checkboxContainer}>
-              <View style={styles.checkboxRow}>
+        <View style={stylesDetalle.modalContainer}>
+          <View style={stylesDetalle.modalContent}>
+            <Text style={stylesDetalle.modalTitle}>Filtrar por estado</Text>
+            <View style={stylesDetalle.checkboxContainer}>
+              <View style={stylesDetalle.checkboxRow}>
                 <Checkbox
                   status={selectedStates.ACTIVO ? "checked" : "unchecked"}
                   onPress={() => toggleState("ACTIVO")}
                 />
-                <Text style={styles.checkboxLabel}>ACTIVO</Text>
+                <Text style={stylesDetalle.checkboxLabel}>ACTIVO</Text>
               </View>
-              <View style={styles.checkboxRow}>
+              <View style={stylesDetalle.checkboxRow}>
                 <Checkbox
                   status={selectedStates.INACTIVO ? "checked" : "unchecked"}
                   onPress={() => toggleState("INACTIVO")}
                 />
-                <Text style={styles.checkboxLabel}>INACTIVO</Text>
+                <Text style={stylesDetalle.checkboxLabel}>INACTIVO</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={applyFilter} style={styles.applyButton}>
-              <Text style={styles.applyButtonText}>Aplicar Filtro</Text>
+            <TouchableOpacity
+              onPress={applyFilter}
+              style={stylesDetalle.applyButton}
+            >
+              <Text style={stylesDetalle.applyButtonText}>Aplicar Filtro</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              style={styles.cancelButton}
+              style={stylesDetalle.cancelButton}
             >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+              <Text style={stylesDetalle.cancelButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -201,144 +218,3 @@ const ContratosPage = () => {
 };
 
 export default ContratosPage;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    padding: 16,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    backgroundColor: "#f9f9f9",
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8,
-    fontSize: 16,
-  },
-  filterIcon: {
-    marginLeft: 8,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#333",
-  },
-  checkboxContainer: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  checkboxRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  checkboxLabel: {
-    fontSize: 16,
-    marginLeft: 8,
-    color: "#333",
-  },
-  applyButton: {
-    backgroundColor: "#ff8c00",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  applyButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  cancelButton: {
-    marginTop: 8,
-  },
-  cancelButtonText: {
-    color: "#999",
-    fontSize: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
-    padding: 16,
-    marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    borderLeftWidth: 4,
-    borderLeftColor: "#ff8c00",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-  },
-  cardHeaderText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
-  jobTitle: {
-    fontSize: 14,
-    color: "#aaa",
-  },
-  info: {
-    fontSize: 14,
-    color: "#888",
-  },
-  estado: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  activo: {
-    color: "green",
-  },
-  inactivo: {
-    color: "red",
-  },
-});

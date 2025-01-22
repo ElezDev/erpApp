@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Image,
   ActivityIndicator,
@@ -13,6 +12,7 @@ import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ContratosModel } from "./ContratosTypes";
 import { RootStackParamList } from "App";
+import { stylesContrato } from "./StylesContrato";
 
 type DetalleContratoScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -59,16 +59,16 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View style={stylesContrato.centered}>
         <ActivityIndicator size="large" color="#ff8c00" />
-        <Text style={styles.loadingText}>Cargando contrato...</Text>
+        <Text style={stylesContrato.loadingText}>Cargando contrato...</Text>
       </View>
     );
   }
 
   if (!contratoDetails) {
     return (
-      <Text style={styles.errorText}>
+      <Text style={stylesContrato.errorText}>
         No se encontraron detalles del contrato.
       </Text>
     );
@@ -77,57 +77,57 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
   const cards = new Array(1).fill(0);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.body}>
+    <ScrollView style={stylesContrato.container}>
+      <View style={stylesContrato.body}>
         {/* Lado Izquierdo: Logo de la Empresa */}
-        <View style={styles.leftSide}>
+        <View style={stylesContrato.leftSide}>
           <Image
             source={{ uri: "https://admin.virtualt.org/default/logoweb.png" }}
-            style={styles.logo}
+            style={stylesContrato.logo}
           />
-          {/* <Text style={styles.companyName}>Empresa Virtual</Text> */}
+          {/* <Text style={stylesContrato.companyName}>Empresa Virtual</Text> */}
         </View>
 
         {/* Lado Derecho: Información del contrato y persona */}
-        <View style={styles.rightSide}>
-          <View style={styles.cardHeader}>
+        <View style={stylesContrato.rightSide}>
+          <View style={stylesContrato.cardHeader}>
             <Image
               source={{ uri: contratoDetails.persona.rutaFotoUrl }}
-              style={styles.avatar}
+              style={stylesContrato.avatar}
             />
-            <View style={styles.cardHeaderText}>
-              <Text style={styles.title}>{contratoDetails.numeroContrato}</Text>
-              <Text style={styles.subtitle}>
+            <View style={stylesContrato.cardHeaderText}>
+              <Text style={stylesContrato.title}>{contratoDetails.numeroContrato}</Text>
+              <Text style={stylesContrato.subtitle}>
                 {contratoDetails.persona.nombre1}{" "}
                 {contratoDetails.persona.apellido1}
               </Text>
-              <Text style={styles.jobTitle}>
+              <Text style={stylesContrato.jobTitle}>
                 {contratoDetails.persona.perfil}
               </Text>
             </View>
           </View>
 
-          <View style={styles.detailsContainer}>
-            <Text style={styles.info}>
+          <View style={stylesContrato.detailsContainer}>
+            <Text style={stylesContrato.info}>
               Fecha de Contratación: {contratoDetails.fechaContratacion}
             </Text>
-            <Text style={styles.info}>
+            <Text style={stylesContrato.info}>
               Valor Total: $
               {contratoDetails.valorTotalContrato.toLocaleString()}
             </Text>
-            <Text style={styles.info}>
+            <Text style={stylesContrato.info}>
               Estado:
               <Text
                 style={
                   contratoDetails.estado.estado === "ACTIVO"
-                    ? styles.activo
-                    : styles.inactivo
+                    ? stylesContrato.activo
+                    : stylesContrato.inactivo
                 }
               >
                 {contratoDetails.estado.estado}
               </Text>
             </Text>
-            <Text style={styles.info}>
+            <Text style={stylesContrato.info}>
               Descripción del Contrato: {contratoDetails.periodoPago}
             </Text>
           </View>
@@ -135,11 +135,11 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
       </View>
 
       {/* Sección con tarjetas adicionales */}
-      <View style={styles.cardGrid}>
+      <View style={stylesContrato.cardGrid}>
         {cards.map((_, index) => (
-          <View key={index} style={styles.cardItem}>
-            <Text style={styles.cardTitle}>Acerca del Contrato</Text>
-            <Text style={styles.cardContent}>
+          <View key={index} style={stylesContrato.cardItem}>
+            <Text style={stylesContrato.cardTitle}>Acerca del Contrato</Text>
+            <Text style={stylesContrato.cardContent}>
               {contratoDetails.fechaContratacion}
               {"\n"}
               {contratoDetails.fechaFinalContrato}
@@ -157,121 +157,6 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f7f7f7",
-    padding: 16,
-  },
-  body: {
-    flexDirection: "row",
-    paddingVertical: 10,
-  },
-  leftSide: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#f7f7f7",
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
-  },
-  rightSide: {
-    flex: 2,
-    paddingLeft: 20,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 20,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 16,
-  },
-  cardHeaderText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 6,
-  },
-  jobTitle: {
-    fontSize: 14,
-    color: "#888",
-  },
-  detailsContainer: {
-    marginTop: 12,
-  },
-  info: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 8,
-  },
-  activo: {
-    color: "#28a745",
-    fontWeight: "bold",
-  },
-  inactivo: {
-    color: "#dc3545",
-    fontWeight: "bold",
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: "#888",
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#dc3545",
-    textAlign: "center",
-    marginTop: 20,
-  },
 
-  cardGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  cardItem: {
-    backgroundColor: "#ffffff",
-    width: "48%",
-    marginBottom: 16,
-    flex: 12,
-    paddingLeft: 20,
-    borderRadius: 12,
-    padding: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  cardContent: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 8,
-  },
-});
 
 export default DetalleContratoPage;
