@@ -1,11 +1,11 @@
 export default {
-    primaryColor: "#553B9C",
-    primaryDark: "#150339",
-
-    primaryLight: "#F6F4FB",
-    secondaryColor: "#FF9B55",
-    black: "#000",
-    white: "#fff",
-    primaryLighter: "#EDEFFD",
-    primaryColorLighter: "#e4d7fd"
-  };
+  primaryColor: "#ffc502", 
+  secondaryColor: "#ffdc4a",
+  accentColor: "#ff6605", 
+  primaryDark: "#b38602",
+  primaryLight: "#fff4c2", 
+  black: "#000",
+  white: "#fff",
+  primaryLighter: "#ffee9c",
+  secondaryLight: "#fff7da"
+};

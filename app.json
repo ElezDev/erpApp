@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./android/app/google-services.json",
-      "package": "com.elezdev.findPetsApp"
+      "package": "com.elezdev.ExpoPetsApp"
     },
     "splash": {
       "image": "./assets/logo.png",

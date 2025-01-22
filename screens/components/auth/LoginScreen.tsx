@@ -4,23 +4,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import Icon from 'react-native-vector-icons/Feather'; // Importar el ícono
+import Icon from 'react-native-vector-icons/Feather'; 
 import { RootStackParamList } from 'App';
 import BASE_URL from 'src/Config/config';
 import color from "src/constant/color";
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [secureText, setSecureText] = useState(true); // Estado para mostrar u ocultar la contraseña
-  const [loading, setLoading] = useState(false); // Estado para la pantalla de carga
+  const [secureText, setSecureText] = useState(true); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Cargar los datos guardados si existen
-    const loadData = async () => {
+    const loadSavedCredentials = async () => {
       const savedEmail = await AsyncStorage.getItem('email');
       const savedPassword = await AsyncStorage.getItem('password');
       if (savedEmail && savedPassword) {
@@ -28,77 +26,86 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         setPassword(savedPassword);
       }
     };
-    loadData();
+    loadSavedCredentials();
   }, []);
 
   const handleLogin = async () => {
-    setLoading(true); // Mostrar la pantalla de carga al iniciar el login
+    if (!email || !password) {
+      Alert.alert('Error', 'Por favor, complete todos los campos');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const response = await axios.post(`${BASE_URL}login`, {
         email,
         password,
       });
-      const token = response.data.token;
 
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('email', email); // Guardar email y password si es necesario
-      await AsyncStorage.setItem('password', password); // Guardar la contraseña (opcional)
+      const { access_token } = response.data;
+      if (!access_token) {
+        throw new Error('Token de acceso no recibido');
+      }
 
-      // Alert.alert('Inicio de sesión exitoso');
+      await AsyncStorage.setItem('access_token', access_token);
+      await AsyncStorage.setItem('email', email);
+      await AsyncStorage.setItem('password', password);
+
       navigation.replace('Main');
     } catch (error) {
-      Alert.alert('Error', 'Credenciales incorrectas');
+      Alert.alert('Error', 'Credenciales incorrectas o problema en el servidor');
+      console.error('Error en el inicio de sesión:', error);
     } finally {
-      setLoading(false); // Ocultar la pantalla de carga cuando la solicitud termine
+      setLoading(false);
     }
   };
 
-  const toggleSecureText = () => {
-    setSecureText(!secureText);
-  };
+  const toggleSecureText = () => setSecureText(!secureText);
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('@asset/icon/pet-logo.png')} 
+        source={require('@asset/icon/logo-login.png')} 
         style={styles.logo}
       />
-      <Text style={styles.title}>🐾 Bienvenido a FindPets</Text>
-      <Text style={styles.subtitle}>Conecta con tu futuro amigo peludo</Text>
+      <Text style={styles.title}>Inicio de Sesión</Text>
+      <Text style={styles.subtitle}>Accede a tu panel empresarial</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Correo electrónico"
-        placeholderTextColor={color.black}
+        placeholder="Correo empresarial"
+        placeholderTextColor={color.secondaryLight}
         value={email}
         onChangeText={setEmail}
       />
+
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
-          placeholderTextColor={color.black}
+          placeholderTextColor={color.secondaryLight}
           secureTextEntry={secureText}
           value={password}
           onChangeText={setPassword}
         />
         <TouchableOpacity onPress={toggleSecureText} style={styles.eyeIcon}>
-          <Icon name={secureText ? 'eye-off' : 'eye'} size={24} color={color.primaryColor} />
+          <Icon name={secureText ? 'eye-off' : 'eye'} size={20} color={color.primaryDark} />
         </TouchableOpacity>
       </View>
 
-      {/* Pantalla de carga */}
       {loading ? (
-        <ActivityIndicator size="large" color={color.secondaryColor} />
+        <ActivityIndicator size="large" color={color.accentColor} />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
           <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
       )}
 
       <Text style={styles.footerText}>
-        ¿No tienes cuenta?{' '}
-        <Text style={styles.footerLink} onPress={() =>{}}>
-          Regístrate aquí
+        ¿Olvidaste tu contraseña?{' '}
+        <Text style={styles.footerLink}>
+          Recuperar
         </Text>
       </Text>
     </View>
@@ -108,42 +115,42 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: color.primaryColorLighter,
+    backgroundColor: color.primaryLighter,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    // width: 120,
+    // height: 120,
+     marginBottom: 20,
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '600',
     color: color.primaryColor,
-    marginBottom: 10,
+    marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
-    color: color.primaryColor,
+    color: color.primaryDark,
     marginBottom: 30,
     textAlign: 'center',
   },
   input: {
     width: '100%',
     backgroundColor: color.white,
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: 8,
+    padding: 12,
     borderWidth: 1,
-    borderColor: color.primaryLighter,
+    borderColor: color.secondaryLight,
     marginBottom: 15,
-    fontSize: 16,
-    color: color.primaryColor,
+    fontSize: 14,
+    color: color.primaryDark,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   passwordContainer: {
     width: '100%',
@@ -156,29 +163,29 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    backgroundColor: color.primaryColor,
-    paddingVertical: 15,
-    borderRadius: 12,
+    backgroundColor: color.accentColor,
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   buttonText: {
     color: color.white,
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '500',
   },
   footerText: {
     fontSize: 14,
-    color: color.primaryColor,
+    color: color.primaryDark,
     marginTop: 10,
   },
   footerLink: {
-    color: color.secondaryColor,
-    fontWeight: 'bold',
+    color: color.accentColor,
+    fontWeight: '600',
   },
 });
 

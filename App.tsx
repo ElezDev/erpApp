@@ -8,6 +8,8 @@ import LoginScreen from 'screens/components/auth/LoginScreen';
 import notificationsScreen from 'screens/components/notifications/notificationsScreen';
 import { usePushNotifications } from 'usePushNotifications';
 import IndicatorScreen from 'screens/components/utils/IdicatorScreen';
+import DetalleContratoPage from 'screens/components/contratos/DetalleContratoPage';
+import { ContratosModel } from 'screens/components/contratos/ContratosTypes';
 
 export type RootStackParamList = {
   Indicator: undefined;
@@ -15,7 +17,8 @@ export type RootStackParamList = {
   Main: undefined;
   Notification: undefined;
   CategoryDetail: { categoryName: string }; 
-  NewsDetail: { newsItem: { id: number; title: string; description: string; image: string } }; 
+  NewsDetail: { newsItem: { id: number; title: string; description: string; image: string } };
+  DetalleContrato: { contrato: ContratosModel };
 
 };
 
@@ -37,6 +40,7 @@ export default function App() {
         <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} options={{ title: 'Detalle de Categoría' }} />
         <Stack.Screen name="NewsDetail" component={NewsDetailScreen} options={{ title: 'Detalle de Noticia' }} />
         <Stack.Screen name="Notification" component={notificationsScreen} />
+        <Stack.Screen name="DetalleContrato" component={DetalleContratoPage} />
 
       </Stack.Navigator>
     </NavigationContainer>

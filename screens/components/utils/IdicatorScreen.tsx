@@ -12,7 +12,7 @@ const IndicatorScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     const checkToken = async () => {
       setTimeout(async () => {
-        const token = await AsyncStorage.getItem('token');
+        const token = await AsyncStorage.getItem('access_token');
         if (token) {
           navigation.replace('Main');
         } else {

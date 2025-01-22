@@ -4,28 +4,35 @@ import {
   Text,
   StyleSheet,
   Image,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
-  TouchableOpacity,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import BASE_URL from 'src/Config/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Persona {
-  first_name: string;
-  last_name: string;
-  biography: string;
-  image_url: string;
+  nombre1: string;
+  nombre2: string;
+  apellido1: string;
+  apellido2: string;
+  email: string;
+  direccion: string;
+  celular: string;
+  telefonoFijo: string;
+  perfil: string;
+  rutaFotoUrl: string;
+  ubicacion: {
+    descripcion: string;
+  };
 }
 
 interface UserProfile {
   user: {
-    name: string;
-    email: string;
-    persona: Persona[];
+    persona: Persona;
   };
 }
 
@@ -34,16 +41,18 @@ const ProfileScreen = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
-        const response = await axios.get(`${BASE_URL}user_data`, {
+        const token = await AsyncStorage.getItem('access_token');
+        const response = await axios.post(`${BASE_URL}user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserData(response.data);
+        console.log('User data:', response.data);
+        console.log('User data:', token);
       } catch (error) {
+        Alert.alert('Error', 'No se pudo cargar la información del usuario.');
         console.error('Error fetching user data:', error);
       } finally {
         setLoading(false);
@@ -53,216 +62,134 @@ const ProfileScreen = () => {
     fetchUserData();
   }, []);
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     Alert.alert(
       'Cerrar sesión',
       '¿Estás seguro de que deseas cerrar sesión?',
       [
-        {
-          text: 'Cancelar',
-          onPress: () => console.log('Cancelado'),
-          style: 'cancel',
-        },
+        { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Cerrar sesión',
           onPress: async () => {
-            await AsyncStorage.removeItem('token');
-                        navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' as never }],
-            });
+            await AsyncStorage.removeItem('access_token');
+            navigation.reset({ index: 0, routes: [{ name: 'Login' as never }] });
           },
         },
-      ],
-      { cancelable: false }
+      ]
     );
   };
-  if (loading) return <Loader />;
-  if (!userData) return <ErrorDisplay message="No se pudieron cargar los datos del usuario." />;
 
-  const { name, email, persona } = userData.user;
-  const profile = persona[0];
-  const pets = [
-    { id: 1, name: 'Firulais', breed: 'Labrador', image: 'https://via.placeholder.com/150' },
-    { id: 2, name: 'Michi', breed: 'Siames', image: 'https://via.placeholder.com/150' },
-  ];
+  if (loading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator size="large" color="#007bff" />
+      </View>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text style={styles.errorText}>No se pudieron cargar los datos del usuario.</Text>
+      </View>
+    );
+  }
+
+  const {
+    nombre1,
+    nombre2,
+    apellido1,
+    apellido2,
+    email,
+    direccion,
+    celular,
+    telefonoFijo,
+    perfil,
+    rutaFotoUrl,
+    ubicacion,
+  } = userData.user.persona;
 
   return (
-    <FlatList
-      ListHeaderComponent={
-        <ProfileHeader
-          profile={profile}
-          email={email}
-          onLogout={handleLogout}
-        />
-      }
-      data={pets}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <PetCard pet={item} />}
-      contentContainerStyle={styles.container}
-    />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: rutaFotoUrl }} style={styles.profileImage} />
+      <Text style={styles.name}>{`${nombre1} ${nombre2} ${apellido1} ${apellido2}`}</Text>
+      <Text style={styles.email}>{email}</Text>
+      <Text style={styles.location}>{`Ubicación: ${ubicacion.descripcion}`}</Text>
+      <Text style={styles.contact}>{`Celular: ${celular}`}</Text>
+      <Text style={styles.contact}>{`Teléfono fijo: ${telefonoFijo}`}</Text>
+      <Text style={styles.address}>{`Dirección: ${direccion}`}</Text>
+      <Text style={styles.bio}>{perfil}</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Cerrar sesión</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
-const Loader = () => (
-  <View style={styles.centeredContainer}>
-    <ActivityIndicator size="large" color="#ff4081" />
-  </View>
-);
-
-const ErrorDisplay = ({ message }: { message: string }) => (
-  <View style={styles.centeredContainer}>
-    <Text style={styles.errorText}>{message}</Text>
-  </View>
-);
-
-const ProfileHeader = ({
-  profile,
-  email,
-  onLogout,
-}: {
-  profile: Persona;
-  email: string;
-  onLogout: () => void;
-}) => (
-  <View style={styles.profileContainer}>
-    <Image
-      source={{ uri:`${profile.image_url}` }}
-      style={styles.profileImage}
-    />
-    <Text style={styles.name}>{`${profile.first_name} ${profile.last_name}`}</Text>
-    <Text style={styles.email}>{email}</Text>
-    <Text style={styles.bio}>{profile.biography}</Text>
-    <View style={styles.buttonsContainer}>
-      <TouchableOpacity style={styles.editButton}>
-        <Text style={styles.buttonText}>Editar Perfil</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.followButton} onPress={onLogout}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-
-const PetCard = ({ pet }: { pet: { name: string; breed: string; image: string } }) => (
-  <View style={styles.petCard}>
-    <Image source={{ uri: pet.image }} style={styles.petImage} />
-    <View style={styles.petDetails}>
-      <Text style={styles.petName}>{pet.name}</Text>
-      <Text style={styles.petBreed}>{pet.breed}</Text>
-    </View>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f7f7f7',
-    paddingBottom: 20,
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f4f4f4',
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  profileContainer: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    margin: 20,
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: '#f1f1f1',
+    backgroundColor: '#f4f4f4',
   },
   profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    marginBottom: 15,
-    borderWidth: 3,
-    borderColor: '#ff4081',
+    marginBottom: 20,
   },
   name: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   email: {
     fontSize: 16,
-    color: '#888',
+    color: '#555',
+    marginBottom: 10,
+  },
+  location: {
+    fontSize: 16,
+    color: '#666',
     marginBottom: 5,
   },
+  contact: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 5,
+  },
+  address: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 10,
+  },
   bio: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: 16,
+    color: '#444',
     textAlign: 'center',
-    marginVertical: 10,
+    marginBottom: 20,
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 15,
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  editButton: {
-    flex: 1,
-    backgroundColor: '#ff4081',
+  logoutButton: {
+    backgroundColor: '#007bff',
     paddingVertical: 10,
-    marginHorizontal: 5,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  followButton: {
-    flex: 1,
-    backgroundColor: '#009688',
-    paddingVertical: 10,
-    marginHorizontal: 5,
-    borderRadius: 30,
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    borderRadius: 5,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '600',
-  },
-  petCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
-  },
-  petImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginRight: 15,
-  },
-  petDetails: {
-    flex: 1,
-  },
-  petName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
-  },
-  petBreed: {
-    fontSize: 14,
-    color: '#888',
   },
   errorText: {
     fontSize: 18,
-    color: '#e74c3c',
+    color: 'red',
   },
 });
 

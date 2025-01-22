@@ -1,16 +1,46 @@
 import React from "react";
-import { StyleSheet, ScrollView, Animated } from "react-native";
-import Doctor from "../news/NewsSection";
+import {
+  StyleSheet,
+  ScrollView,
+  Animated,
+  Alert,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { NavigationProp } from '@react-navigation/native';
-import Category from "../categories/Category";
+import { NavigationProp } from "@react-navigation/native";
 import Header from "../navigations/Header";
-import HeadLine from "../navigations/HeadLine";
 import Search from "../utils/Search";
+import BannerERP from "./BannerERP";
+import GraficosResumen from "../graficos/GraficosResumen";
 
 const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const headerAnim = React.useRef(new Animated.Value(0)).current;
-
+  const handleLogout = async () => {
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro de que deseas cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancelado"),
+          style: "cancel",
+        },
+        {
+          text: "Cerrar sesión",
+          onPress: async () => {
+            await AsyncStorage.removeItem("access_token");
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" as never }],
+            });
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   React.useEffect(() => {
     Animated.timing(headerAnim, {
       toValue: 1,
@@ -34,12 +64,15 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
           ],
         }}
       >
-      <Header navigation={navigation} />
+        <Header navigation={navigation} />
       </Animated.View>
       <Search />
-      <HeadLine />
-      <Category />
-      <Doctor />
+      <BannerERP />
+      <GraficosResumen />
+      <TouchableOpacity style={styles.followButton} onPress={handleLogout}>
+        <Text>Logout</Text>
+      </TouchableOpacity>
+      {/* <Doctor /> */}
     </ScrollView>
   );
 };
@@ -48,7 +81,18 @@ export default Home;
 
 const styles = StyleSheet.create({
   scrollView: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 11,
     paddingTop: 10,
+  },
+  followButton: {
+    backgroundColor: "#FF6699",
+    padding: 15,
+    borderRadius: 5,
+    alignSelf: "center",
+    marginTop: 20,
+    marginBottom: 10,
+    width: 150,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
