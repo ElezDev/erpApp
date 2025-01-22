@@ -5,6 +5,7 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import axios from "axios";
 import BASE_URL from "src/Config/config";
@@ -13,6 +14,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ContratosModel } from "./ContratosTypes";
 import { RootStackParamList } from "App";
 import { stylesContrato } from "./StylesContrato";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 type DetalleContratoScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -35,25 +37,29 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchContrato = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      if (!contrato.numeroContrato) {
+        const response = await axios.get(
+          `${BASE_URL}contrato_by_id/${contrato.id}`
+        );
+        setContratoDetails(response.data);
+      } else {
+        setContratoDetails(contrato);
+      }
+    } catch (error) {
+      console.error("Error al cargar el contrato:", error);
+      setError("Hubo un problema al cargar el contrato.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchContrato = async () => {
-      try {
-        if (!contrato.numeroContrato) {
-          const response = await axios.get(
-            `${BASE_URL}contrato_by_id/${contrato.id}`
-          );
-          setContratoDetails(response.data);
-        } else {
-          setContratoDetails(contrato);
-        }
-      } catch (error) {
-        console.error("Error al cargar el contrato:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchContrato();
   }, [contrato]);
 
@@ -62,6 +68,15 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
       <View style={stylesContrato.centered}>
         <ActivityIndicator size="large" color="#ff8c00" />
         <Text style={stylesContrato.loadingText}>Cargando contrato...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={stylesContrato.errorContainer}>
+        <Text style={stylesContrato.errorText}>{error}</Text>
+        <Button title="Reintentar" onPress={fetchContrato} />
       </View>
     );
   }
@@ -85,7 +100,6 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
             source={{ uri: "https://admin.virtualt.org/default/logoweb.png" }}
             style={stylesContrato.logo}
           />
-          {/* <Text style={stylesContrato.companyName}>Empresa Virtual</Text> */}
         </View>
 
         {/* Lado Derecho: Información del contrato y persona */}
@@ -96,7 +110,9 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
               style={stylesContrato.avatar}
             />
             <View style={stylesContrato.cardHeaderText}>
-              <Text style={stylesContrato.title}>{contratoDetails.numeroContrato}</Text>
+              <Text style={[stylesContrato.title, stylesContrato.bold]}>
+                {contratoDetails.numeroContrato}
+              </Text>
               <Text style={stylesContrato.subtitle}>
                 {contratoDetails.persona.nombre1}{" "}
                 {contratoDetails.persona.apellido1}
@@ -108,28 +124,44 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
           </View>
 
           <View style={stylesContrato.detailsContainer}>
-            <Text style={stylesContrato.info}>
-              Fecha de Contratación: {contratoDetails.fechaContratacion}
-            </Text>
-            <Text style={stylesContrato.info}>
-              Valor Total: $
-              {contratoDetails.valorTotalContrato.toLocaleString()}
-            </Text>
-            <Text style={stylesContrato.info}>
-              Estado:
-              <Text
-                style={
-                  contratoDetails.estado.estado === "ACTIVO"
-                    ? stylesContrato.activo
-                    : stylesContrato.inactivo
-                }
-              >
-                {contratoDetails.estado.estado}
+            <View style={stylesContrato.infoItem}>
+              <Icon name="calendar" size={20} color="#ff8c00" />
+              <Text style={stylesContrato.info}>
+                Fecha de Contratación: {contratoDetails.fechaContratacion}
               </Text>
-            </Text>
-            <Text style={stylesContrato.info}>
-              Descripción del Contrato: {contratoDetails.periodoPago}
-            </Text>
+            </View>
+            <View style={stylesContrato.infoItem}>
+              <Icon name="money" size={20} color="#ff8c00" />
+              <Text style={stylesContrato.info}>
+                Valor Total: $
+                {contratoDetails.valorTotalContrato.toLocaleString()}
+              </Text>
+            </View>
+            <View style={stylesContrato.infoItem}>
+              <Icon
+                name={contratoDetails.estado.estado === "ACTIVO" ? "check" : "times"}
+                size={20}
+                color={contratoDetails.estado.estado === "ACTIVO" ? "green" : "red"}
+              />
+              <Text style={stylesContrato.info}>
+                Estado:
+                <Text
+                  style={
+                    contratoDetails.estado.estado === "ACTIVO"
+                      ? stylesContrato.activo
+                      : stylesContrato.inactivo
+                  }
+                >
+                  {contratoDetails.estado.estado}
+                </Text>
+              </Text>
+            </View>
+            {/* <View style={stylesContrato.infoItem}>
+              <Icon name="file-text" size={20} color="#ff8c00" />
+              <Text style={stylesContrato.info}>
+                Descripción del Contrato: {contratoDetails.periodoPago}
+              </Text>
+            </View> */}
           </View>
         </View>
       </View>
@@ -153,10 +185,14 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
           </View>
         ))}
       </View>
+
+      {/* Botones de acción */}
+      {/* <View style={stylesContrato.actionButtons}>
+        <Button title="Editar Contrato" onPress={() => alert('Editar contrato')} />
+        <Button title="Compartir Contrato" onPress={() => alert('Compartir contrato')} />
+      </View> */}
     </ScrollView>
   );
 };
-
-
 
 export default DetalleContratoPage;

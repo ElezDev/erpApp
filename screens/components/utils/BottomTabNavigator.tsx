@@ -11,6 +11,7 @@ import CustomHeader from '../navigations/CustomHeader';
 import contactScreen from '../contact/contactScreen';
 import chatScreen from '../chat/chatScreen';
 import ContratosPage from '../contratos/ContratosPage';
+import Nomina from '../nomina/Nomina';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,9 +42,9 @@ const BottomTabNavigator = () => {
           iconName = focused ? 'document-text' : 'document-outline';
 
         }
-        // else if (route.name === 'Contactos') {
-        //   iconName = focused ? 'person' : 'person-outline';
-        // }
+        else if (route.name === 'Nomina') {
+          iconName = focused ? 'card' : 'wallet'; 
+        }
         // else if (route.name === 'Chat') {
         //   iconName = focused ? 'person' : 'person-outline';
         // }
@@ -71,7 +72,7 @@ const BottomTabNavigator = () => {
   >
     <Tab.Screen name="Home" component={HomeScreen} />
     <Tab.Screen name="Contratos" component={ContratosPage} />
-    {/* <Tab.Screen name="Contactos" component={contactScreen} /> */}
+    <Tab.Screen name="Nomina" component={Nomina} />
     {/* <Tab.Screen name="Chat" component={chatScreen} /> */}
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
