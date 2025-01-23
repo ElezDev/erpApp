@@ -10,14 +10,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/pet-logo.png",
-        "backgroundColor": "#ffffff"
-      },
-      "googleServicesFile": "./android/app/google-services.json",
-      "package": "com.elezdev.ErpVtApp"
-    },
+   
     "splash": {
       "image": "./assets/logo-login.png",
       "resizeMode": "contain",
@@ -27,6 +20,14 @@
       "eas": {
         "projectId": "a5f86990-390f-466b-adf1-277aba28a6c9"
       }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-login.png",
+        "backgroundColor": "#ffffff"
+      },
+      "googleServicesFile": "./android/app/google-services.json",
+      "package": "com.elezdev.ErpVtApp"
     },
     "owner": "elezdev"
   }

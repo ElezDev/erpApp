@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "535024022286",
-    "project_id": "expopushnotifications-6c6b6",
-    "storage_bucket": "expopushnotifications-6c6b6.firebasestorage.app"
+    "project_number": "742837122457",
+    "project_id": "erpapp-a9f31",
+    "storage_bucket": "erpapp-a9f31.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:535024022286:android:dca5795fd8f3619bba5d5f",
+        "mobilesdk_app_id": "1:742837122457:android:87ad5fd23ee8c43bfe0f08",
         "android_client_info": {
           "package_name": "com.elezdev.ErpVtApp"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCaC5fmrTXIihgijPvyLu-61duTazjLwL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:535024022286:android:5173dfb850f8d3f7ba5d5f",
-        "android_client_info": {
-          "package_name": "com.elezdev.findPetsApp"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCaC5fmrTXIihgijPvyLu-61duTazjLwL8"
+          "current_key": "AIzaSyB3RG4nCaTDwC2Ee1DuyfVUgJaz4AE1WsA"
         }
       ],
       "services": {
