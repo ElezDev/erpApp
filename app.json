@@ -10,7 +10,6 @@
     "ios": {
       "supportsTablet": true
     },
-   
     "splash": {
       "image": "./assets/logo-login.png",
       "resizeMode": "contain",
@@ -18,7 +17,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "a5f86990-390f-466b-adf1-277aba28a6c9"
+        "projectId": "15df7b14-f132-4145-af3a-bb63e04a3703"
       }
     },
     "android": {

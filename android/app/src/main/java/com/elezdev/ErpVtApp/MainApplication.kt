@@ -1,5 +1,4 @@
-package com.elezdev.ErpVtApp
-
+package com.elezdev.findPetsApp
 import android.app.Application
 import android.content.res.Configuration
 
