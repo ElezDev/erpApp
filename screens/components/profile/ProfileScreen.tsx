@@ -1,59 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
+
   Image,
   ScrollView,
   ActivityIndicator,
   Alert,
   TouchableOpacity,
-} from 'react-native';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import BASE_URL from 'src/Config/config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from "react-native";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import BASE_URL from "src/Config/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { stylesProfile } from "./StylesProfile";
+import { Persona } from "../contratos/ContratosTypes";
 
-interface Persona {
-  nombre1: string;
-  nombre2: string;
-  apellido1: string;
-  apellido2: string;
-  email: string;
-  direccion: string;
-  celular: string;
-  telefonoFijo: string;
-  perfil: string;
-  rutaFotoUrl: string;
-  ubicacion: {
-    descripcion: string;
-  };
-}
-
-interface UserProfile {
-  user: {
-    persona: Persona;
-  };
-}
+// interface Persona {
+//   nombre1: string;
+//   nombre2: string;
+//   apellido1: string;
+//   apellido2: string;
+//   email: string;
+//   direccion: string;
+//   celular: string;
+//   telefonoFijo: string;
+//   perfil: string;
+//   rutaFotoUrl: string;
+//   ubicacion: { descripcion: string };
+// }
 
 const ProfileScreen = () => {
-  const [userData, setUserData] = useState<UserProfile | null>(null);
+  const [userData, setUserData] = useState<Persona | null>(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = await AsyncStorage.getItem('access_token');
-        const response = await axios.post(`${BASE_URL}user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUserData(response.data);
-        console.log('User data:', response.data);
-        console.log('User data:', token);
+        const token = await AsyncStorage.getItem("access_token");
+        const response = await axios.post(
+          `${BASE_URL}user`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setUserData(response.data.persona);
       } catch (error) {
-        Alert.alert('Error', 'No se pudo cargar la información del usuario.');
-        console.error('Error fetching user data:', error);
+        Alert.alert("Error", "No se pudo cargar la información del usuario.");
+        console.error("Error fetching user data:", error);
       } finally {
         setLoading(false);
       }
@@ -63,34 +60,32 @@ const ProfileScreen = () => {
   }, []);
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Cerrar sesión',
-      '¿Estás seguro de que deseas cerrar sesión?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Cerrar sesión',
-          onPress: async () => {
-            await AsyncStorage.removeItem('access_token');
-            navigation.reset({ index: 0, routes: [{ name: 'Login' as never }] });
-          },
+    Alert.alert("Cerrar sesión", "¿Estás seguro de que deseas cerrar sesión?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Cerrar sesión",
+        onPress: async () => {
+          await AsyncStorage.removeItem("access_token");
+          navigation.reset({ index: 0, routes: [{ name: "Login" as never }] });
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading) {
     return (
-      <View style={styles.centeredContainer}>
-        <ActivityIndicator size="large" color="#007bff" />
+      <View style={stylesProfile.centeredContainer}>
+        <ActivityIndicator size="large" color="#4A90E2" />
       </View>
     );
   }
 
   if (!userData) {
     return (
-      <View style={styles.centeredContainer}>
-        <Text style={styles.errorText}>No se pudieron cargar los datos del usuario.</Text>
+      <View style={stylesProfile.centeredContainer}>
+        <Text style={stylesProfile.errorText}>
+          No se pudieron cargar los datos del usuario.
+        </Text>
       </View>
     );
   }
@@ -106,91 +101,56 @@ const ProfileScreen = () => {
     telefonoFijo,
     perfil,
     rutaFotoUrl,
-    ubicacion,
-  } = userData.user.persona;
+    ciudad_ubicacion,
+  } = userData;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={{ uri: rutaFotoUrl }} style={styles.profileImage} />
-      <Text style={styles.name}>{`${nombre1} ${nombre2} ${apellido1} ${apellido2}`}</Text>
-      <Text style={styles.email}>{email}</Text>
-      <Text style={styles.location}>{`Ubicación: ${ubicacion.descripcion}`}</Text>
-      <Text style={styles.contact}>{`Celular: ${celular}`}</Text>
-      <Text style={styles.contact}>{`Teléfono fijo: ${telefonoFijo}`}</Text>
-      <Text style={styles.address}>{`Dirección: ${direccion}`}</Text>
-      <Text style={styles.bio}>{perfil}</Text>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Cerrar sesión</Text>
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={stylesProfile.container}>
+      {/* Encabezado */}
+      <View style={stylesProfile.headerCard}>
+        <Image source={{ uri: rutaFotoUrl }} style={stylesProfile.profileImage} />
+        <Text style={stylesProfile.name}>
+          {`${nombre1} ${nombre2} ${apellido1}`}
+        </Text>
+        <Text style={stylesProfile.position}>Administrador del Sistema</Text>
+      </View>
+
+      {/* Información Personal */}
+      <View style={stylesProfile.infoCard}>
+        <Text style={stylesProfile.cardTitle}>Información Personal</Text>
+        <Text style={stylesProfile.infoText}>
+          📧 {email}
+        </Text>
+        <Text style={stylesProfile.infoText}>
+          📞 {telefonoFijo || "N/A"}
+        </Text>
+        <Text style={stylesProfile.infoText}>
+          📱 {celular || "N/A"}
+        </Text>
+        <Text style={stylesProfile.infoText}>
+          📍 {ciudad_ubicacion.descripcion} || <Text style={stylesProfile.infoText}>{direccion}</Text>
+        </Text>
+      </View>
+
+      {/* Dirección */} 
+      {/* <View style={stylesProfile.infoCard}>
+        <Text style={stylesProfile.cardTitle}>Dirección</Text>
+        <Text style={stylesProfile.infoText}>{direccion}</Text>
+      </View> */}
+
+      {/* Perfil */}
+      <View style={stylesProfile.infoCard}>
+        <Text style={stylesProfile.cardTitle}>Perfil</Text>
+        <Text style={stylesProfile.infoText}>{perfil}</Text>
+      </View>
+
+      {/* Botón de Cerrar Sesión */}
+      {/* <TouchableOpacity style={stylesProfile.logoutButton} onPress={handleLogout}>
+        <Text style={stylesProfile.buttonText}>Cerrar sesión</Text>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f4f4f4',
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f4f4f4',
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 20,
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  email: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 10,
-  },
-  location: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 5,
-  },
-  contact: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 5,
-  },
-  address: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 10,
-  },
-  bio: {
-    fontSize: 16,
-    color: '#444',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  logoutButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorText: {
-    fontSize: 18,
-    color: 'red',
-  },
-});
 
 export default ProfileScreen;

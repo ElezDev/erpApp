@@ -114,6 +114,7 @@ export interface ContratosModel {
     updated_at: string
     rutaFotoUrl: string
     ciudad_ubicacion: CiudadUbicacion
+    
   }
   
   export interface CiudadUbicacion {

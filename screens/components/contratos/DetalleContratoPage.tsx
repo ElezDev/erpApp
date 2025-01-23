@@ -30,7 +30,7 @@ interface DetalleContratoProps {
   navigation: DetalleContratoScreenNavigationProp;
 }
 
-const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
+const DetalleContratoPage = ({ route, navigation }: DetalleContratoProps) => {
   const { contrato } = route.params;
 
   const [contratoDetails, setContratoDetails] = useState<ContratosModel | null>(
@@ -61,7 +61,13 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
 
   useEffect(() => {
     fetchContrato();
-  }, [contrato]);
+    // Personalizar el título del header
+    if (contratoDetails) {
+      navigation.setOptions({
+        title: `${contratoDetails.persona.nombre1} ${contratoDetails.persona.apellido1}`,
+      });
+    }
+  }, [contrato, contratoDetails, navigation]);
 
   if (loading) {
     return (
@@ -156,12 +162,6 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
                 </Text>
               </Text>
             </View>
-            {/* <View style={stylesContrato.infoItem}>
-              <Icon name="file-text" size={20} color="#ff8c00" />
-              <Text style={stylesContrato.info}>
-                Descripción del Contrato: {contratoDetails.periodoPago}
-              </Text>
-            </View> */}
           </View>
         </View>
       </View>
@@ -185,12 +185,6 @@ const DetalleContratoPage = ({ route }: DetalleContratoProps) => {
           </View>
         ))}
       </View>
-
-      {/* Botones de acción */}
-      {/* <View style={stylesContrato.actionButtons}>
-        <Button title="Editar Contrato" onPress={() => alert('Editar contrato')} />
-        <Button title="Compartir Contrato" onPress={() => alert('Compartir contrato')} />
-      </View> */}
     </ScrollView>
   );
 };
